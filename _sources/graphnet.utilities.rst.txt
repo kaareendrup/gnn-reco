@@ -1,0 +1,45 @@
+graphnet.utilities package
+==========================
+
+Submodules
+----------
+
+graphnet.utilities.filesys module
+---------------------------------
+
+.. automodule:: graphnet.utilities.filesys
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+graphnet.utilities.imports module
+---------------------------------
+
+.. automodule:: graphnet.utilities.imports
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+graphnet.utilities.logging module
+---------------------------------
+
+.. automodule:: graphnet.utilities.logging
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+graphnet.utilities.maths module
+-------------------------------
+
+.. automodule:: graphnet.utilities.maths
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: graphnet.utilities
+   :members:
+   :undoc-members:
+   :show-inheritance:

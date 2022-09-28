@@ -1,6 +1,17 @@
 graphnet.data package
 =====================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   graphnet.data.extractors
+   graphnet.data.parquet
+   graphnet.data.sqlite
+   graphnet.data.utilities
+
 Submodules
 ----------
 
@@ -20,42 +31,18 @@ graphnet.data.dataconverter module
    :undoc-members:
    :show-inheritance:
 
-graphnet.data.i3extractor module
---------------------------------
+graphnet.data.dataset module
+----------------------------
 
-.. automodule:: graphnet.data.i3extractor
+.. automodule:: graphnet.data.dataset
    :members:
    :undoc-members:
    :show-inheritance:
 
-graphnet.data.sqlite\_dataconverter module
-------------------------------------------
+graphnet.data.pipeline module
+-----------------------------
 
-.. automodule:: graphnet.data.sqlite_dataconverter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-graphnet.data.sqlite\_dataset module
-------------------------------------
-
-.. automodule:: graphnet.data.sqlite_dataset
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-graphnet.data.sqlite\_dataset\_perturbed module
------------------------------------------------
-
-.. automodule:: graphnet.data.sqlite_dataset_perturbed
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-graphnet.data.utils module
---------------------------
-
-.. automodule:: graphnet.data.utils
+.. automodule:: graphnet.data.pipeline
    :members:
    :undoc-members:
    :show-inheritance:
