@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from graphnet.training.loss_functions import LossFunction  # type: ignore[attr-defined]
 
 from graphnet.models import Model
-from graphnet.utilities.config import save_model_config
 from graphnet.utilities.decorators import final
 
 
@@ -39,7 +38,6 @@ class Task(Model):
         """Return default prediction labels."""
         return self._default_prediction_labels
 
-    @save_model_config
     def __init__(
         self,
         *,
@@ -264,17 +262,40 @@ class Task(Model):
 class IdentityTask(Task):
     """Identity, or trivial, task."""
 
-    @save_model_config
-    def __init__(self, nb_outputs: int, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        nb_outputs: int,
+        target_labels: Union[List[str], Any],
+        *args: Any,
+        **kwargs: Any,
+    ):
         """Construct IdentityTask.
 
         Return the `nb_outputs` as a direct, affine transformation of the last
         hidden layer.
         """
         self._nb_inputs = nb_outputs
+        self._default_target_labels = (
+            target_labels
+            if isinstance(target_labels, list)
+            else [target_labels]
+        )
+        self._default_prediction_labels = [
+            f"target_{i}_pred" for i in range(len(self._default_target_labels))
+        ]
 
-        # Base class constructor
         super().__init__(*args, **kwargs)
+        # Base class constructor
+
+    @property
+    def default_target_labels(self) -> List[str]:
+        """Return default target labels."""
+        return self._default_target_labels
+
+    @property
+    def default_prediction_labels(self) -> List[str]:
+        """Return default prediction labels."""
+        return self._default_prediction_labels
 
     @property
     def nb_inputs(self) -> int:

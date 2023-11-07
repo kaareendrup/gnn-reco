@@ -12,25 +12,65 @@ from torch.utils.data import DataLoader
 from torch_geometric.data import Batch, Data
 
 from graphnet.data.dataset import Dataset
-from graphnet.data.sqlite import SQLiteDataset
-from graphnet.data.parquet import ParquetDataset
+from graphnet.data.dataset import SQLiteDataset
+from graphnet.data.dataset import ParquetDataset
 from graphnet.models import Model
 from graphnet.utilities.logging import Logger
+from graphnet.models.graphs import GraphDefinition
 
 
 def collate_fn(graphs: List[Data]) -> Batch:
     """Remove graphs with less than two DOM hits.
 
-    Should not occur in "production.
+    Should not occur in "production".
     """
     graphs = [g for g in graphs if g.n_pulses > 1]
     return Batch.from_data_list(graphs)
+
+
+class collator_sequence_buckleting:
+    """Perform the sequence bucketing for the graphs in the batch."""
+
+    def __init__(self, batch_splits: List[float] = [0.8]):
+        """Set cutting points of the different mini-batches.
+
+        batch_splits: list of floats, each element is the fraction of the total
+        number of graphs. This list should not explicitly define the first and
+        last elements, which will always be 0 and 1 respectively.
+        """
+        self.batch_splits = batch_splits
+
+    def __call__(self, graphs: List[Data]) -> Batch:
+        """Execute sequence bucketing on the input list of graphs.
+
+        Args:
+            graphs: A list of Data objects representing the input graphs.
+
+        Returns:
+            A list of Batch objects, each containing a mini-batch of the input
+            graphs sorted by their number of pulses.
+        """
+        graphs = [g for g in graphs if g.n_pulses > 1]
+        graphs.sort(key=lambda x: x.n_pulses)
+        batch_list = []
+
+        for minp, maxp in zip(
+            [0] + self.batch_splits, self.batch_splits + [1]
+        ):
+            min_idx = int(minp * len(graphs))
+            max_idx = int(maxp * len(graphs))
+            this_graphs = graphs[min_idx:max_idx]
+            if len(this_graphs) > 0:
+                this_batch = Batch.from_data_list(this_graphs)
+                batch_list.append(this_batch)
+        return batch_list
 
 
 # @TODO: Remove in favour of DataLoader{,.from_dataset_config}
 def make_dataloader(
     db: str,
     pulsemaps: Union[str, List[str]],
+    graph_definition: GraphDefinition,
     features: List[str],
     truth: List[str],
     *,
@@ -66,6 +106,7 @@ def make_dataloader(
         loss_weight_table=loss_weight_table,
         loss_weight_column=loss_weight_column,
         index_column=index_column,
+        graph_definition=graph_definition,
     )
 
     # adds custom labels to dataset
@@ -89,6 +130,7 @@ def make_dataloader(
 # @TODO: Remove in favour of DataLoader{,.from_dataset_config}
 def make_train_validation_dataloader(
     db: str,
+    graph_definition: GraphDefinition,
     selection: Optional[List[int]],
     pulsemaps: Union[str, List[str]],
     features: List[str],
@@ -111,8 +153,7 @@ def make_train_validation_dataloader(
 ) -> Tuple[DataLoader, DataLoader]:
     """Construct train and test `DataLoader` instances."""
     # Reproducibility
-    rng = np.random.RandomState(seed=seed)
-
+    rng = np.random.default_rng(seed=seed)
     # Checks(s)
     if isinstance(pulsemaps, str):
         pulsemaps = [pulsemaps]
@@ -122,19 +163,21 @@ def make_train_validation_dataloader(
         dataset: Dataset
         if db.endswith(".db"):
             dataset = SQLiteDataset(
-                db,
-                pulsemaps,
-                features,
-                truth,
+                path=db,
+                graph_definition=graph_definition,
+                pulsemaps=pulsemaps,
+                features=features,
+                truth=truth,
                 truth_table=truth_table,
                 index_column=index_column,
             )
         elif db.endswith(".parquet"):
             dataset = ParquetDataset(
-                db,
-                pulsemaps,
-                features,
-                truth,
+                path=db,
+                graph_definition=graph_definition,
+                pulsemaps=pulsemaps,
+                features=features,
+                truth=truth,
                 truth_table=truth_table,
                 index_column=index_column,
             )
@@ -153,13 +196,13 @@ def make_train_validation_dataloader(
             frac=1, replace=False, random_state=rng
         )
         training_df, validation_df = train_test_split(
-            shuffled_df, test_size=test_size, random_state=rng
+            shuffled_df, test_size=test_size, random_state=seed
         )
         training_selection = training_df.values.tolist()
         validation_selection = validation_df.values.tolist()
     else:
         training_selection, validation_selection = train_test_split(
-            selection, test_size=test_size, random_state=rng
+            selection, test_size=test_size, random_state=seed
         )
 
     # Create DataLoaders
@@ -179,6 +222,7 @@ def make_train_validation_dataloader(
         loss_weight_table=loss_weight_table,
         index_column=index_column,
         labels=labels,
+        graph_definition=graph_definition,
     )
 
     training_dataloader = make_dataloader(

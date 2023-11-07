@@ -11,6 +11,7 @@ from graphnet.data.extractors.i3featureextractor import (
 from graphnet.constants import (
     TEST_DATA_DIR,
     EXAMPLE_OUTPUT_DIR,
+    PRETRAINED_MODEL_DIR,
 )
 from graphnet.utilities.argparse import ArgumentParser
 from graphnet.utilities.imports import has_icecube_package
@@ -25,7 +26,17 @@ if has_icecube_package() or TYPE_CHECKING:
         GraphNeTI3Module,
     )
 
-from _common_icetray import ERROR_MESSAGE_MISSING_ICETRAY
+ERROR_MESSAGE_MISSING_ICETRAY = (
+    "This example requires IceTray to be installed, which doesn't seem to be "
+    "the case. Please install IceTray; run this example in the GraphNeT "
+    "Docker container which comes with IceTray installed; or run an example "
+    "script in one of the other folders:"
+    "\n * examples/02_data/"
+    "\n * examples/03_weights/"
+    "\n * examples/04_training/"
+    "\n * examples/05_pisa/"
+    "\nExiting."
+)
 
 
 def apply_to_files(
@@ -71,7 +82,10 @@ def main() -> None:
     # Constants
     features = FEATURES.UPGRADE
     input_folders = [f"{TEST_DATA_DIR}/i3/upgrade_genie_step4_140028_000998"]
-    mock_model_path = f"{TEST_DATA_DIR}/models/mock_energy_model.pth"
+    base_path = f"{PRETRAINED_MODEL_DIR}/icecube/upgrade/QUESO"
+    model_name = "total_neutrino_energy"
+    model_config = f"{base_path}/{model_name}/{model_name}_config.yml"
+    state_dict = f"{base_path}/{model_name}/{model_name}_state_dict.pth"
     output_folder = f"{EXAMPLE_OUTPUT_DIR}/i3_deployment/upgrade"
     gcd_file = f"{TEST_DATA_DIR}/i3/upgrade_genie_step4_140028_000998/GeoCalibDetectorStatus_ICUpgrade.v58.mixed.V0.i3.bz2"
     features = FEATURES.UPGRADE
@@ -84,7 +98,8 @@ def main() -> None:
         pulsemap=pulsemap,
         features=features,
         pulsemap_extractor=I3FeatureExtractorIceCubeUpgrade(pulsemap=pulsemap),
-        model=mock_model_path,
+        model_config=model_config,
+        state_dict=state_dict,
         gcd_file=gcd_file,
         prediction_columns=["energy"],
         model_name="graphnet_deployment_example",
@@ -111,7 +126,7 @@ Use GraphNeTI3Modules to deploy trained model in native IceTray.
 """
         )
 
-        args = parser.parse_args()
+        args, unknown = parser.parse_known_args()
 
         # Run example script
         main()

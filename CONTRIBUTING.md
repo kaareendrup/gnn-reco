@@ -8,7 +8,7 @@ Use [GitHub issues](https://github.com/graphnet-team/graphnet/issues) for tracki
 
 ## Pull requests
 
-Develop code in a forks of the [main repo](https://github.com/graphnet-team/graphnet). Make contributions in dedicated development/feature branches on your forked repositories, e.g. if you are implementing a specific `GraphBuiler` class you could create a branch named `add-euclidean-graph-builder` on your own fork.
+Develop code in a fork of the [main repo](https://github.com/graphnet-team/graphnet). Make contributions in dedicated development/feature branches on your forked repositories, e.g. if you are implementing a specific `GraphDefinition` class you could create a branch named `add-euclidean-graph-definition` on your own fork.
 
 Create pull requests from your development branch into `graphnet-team/graphnet:main` to contribute to the project. **To be accepted,** pull requests must:
   * pass all automated checks,
@@ -20,7 +20,7 @@ Create pull requests from your development branch into `graphnet-team/graphnet:m
 
 ## Conventions
 
-This repository aims to support python 3 version that are actively supported (currently `>=3.6`). Standard python coding conventions should be followed:
+This repository aims to support python 3 version that are actively supported (currently `>=3.8`). Standard python coding conventions should be followed:
 
 * Adhere to [PEP 8](https://www.python.org/dev/peps/pep-0008/)
 * Use [pylint](https://www.pylint.org/)/[flake8](https://flake8.pycqa.org/) and [black](https://black.readthedocs.io/) to ensure as clean and well-formatted code as possible
@@ -50,3 +50,22 @@ From "Software Best Practices Effective Version Control", Alex Olivas, IceCube B
 
 Others:
 * Keep backward compatibility in mind when you change code.
+
+## Experiment tracking
+
+We're using [Weights & Biases](https://wandb.ai/) (W&B) to track the results — i.e. losses, metrics, and model artifacts — of training runs as a means to track model experimentation and streamline optimisation. To authenticate with W&B, sign up on the website and run the following in your terminal after having installed this package:
+```bash
+$ wandb login
+```
+You can use your own, personal projects on W&B, but for projects of common interest you are encouraged to join the `graphnet-team` team on W&B [here](https://wandb.ai/graphnet-team), create new projects for your specific use cases, and log your runs there. Just ask [@asogaard](https://github.com/asogaard) for an invite to the team!
+
+If you don't want to use W&B and/or only want to log run data locally, you can run:
+```bash
+$ wandb offline
+```
+If you change you mind, it's as simple as:
+```bash
+$ wandb online
+```
+
+The [examples/04_training/01_train_model.py](examples/04_training/01_train_model.py) script shows how to train a model and log the results to W&B.

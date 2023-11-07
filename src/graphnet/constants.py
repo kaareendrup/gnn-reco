@@ -31,3 +31,15 @@ EXAMPLE_OUTPUT_DIR = os.path.join(EXAMPLE_DATA_DIR, "output")
 
 # Configuration files
 CONFIG_DIR = os.path.join(GRAPHNET_ROOT_DIR, "configs")
+DATASETS_CONFIG_DIR = os.path.join(CONFIG_DIR, "datasets")
+MODEL_CONFIG_DIR = os.path.join(CONFIG_DIR, "models")
+
+# Pretrained models /icecube/upgrade/QUESO
+PRETRAINED_MODEL_DIR = os.path.join(
+    GRAPHNET_ROOT_DIR, "src", "graphnet", "models", "pretrained"
+)
+
+# Geometry Tables
+GEOMETRY_TABLE_DIR = os.path.join(DATA_DIR, "geometry_tables")
+ICECUBE_GEOMETRY_TABLE_DIR = os.path.join(GEOMETRY_TABLE_DIR, "icecube")
+PROMETHEUS_GEOMETRY_TABLE_DIR = os.path.join(GEOMETRY_TABLE_DIR, "prometheus")
