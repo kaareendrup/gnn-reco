@@ -111,6 +111,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
@@ -121,7 +129,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="parquet_dataset" href="graphnet.data.parquet.parquet_dataset.html" />
+    <link rel="next" title="sqlite" href="graphnet.data.sqlite.html" />
     <link rel="prev" title="parquet" href="graphnet.data.parquet.html" />
   
    
@@ -302,6 +310,13 @@
     <li class="md-nav__item">
     
     
+      <a href="graphnet.data.dataset.html" class="md-nav__link">dataset</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="graphnet.data.extractors.html" class="md-nav__link">extractors</a>
       
     
@@ -369,13 +384,6 @@
     
     </li></ul>
     
-    </li>
-    <li class="md-nav__item">
-    
-    
-      <a href="graphnet.data.parquet.parquet_dataset.html" class="md-nav__link">parquet_dataset</a>
-      
-    
     </li></ul>
     
     </li>
@@ -417,7 +425,7 @@
     <li class="md-nav__item">
     
     
-      <a href="graphnet.data.dataset.html" class="md-nav__link">dataset</a>
+      <a href="graphnet.data.filters.html" class="md-nav__link">filters</a>
       
     
     </li>
@@ -516,7 +524,7 @@
 <p>DataConverter for the Parquet backend.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="graphnet.data.parquet.parquet_dataconverter.ParquetDataConverter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.data.parquet.parquet_dataconverter.</span></span><span class="sig-name descname"><span class="pre">ParquetDataConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extractors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gcd_rescue</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_files_to_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequential_batch_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_file_batch_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icetray_verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/data/parquet/parquet_dataconverter.html#ParquetDataConverter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.data.parquet.parquet_dataconverter.ParquetDataConverter" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.data.parquet.parquet_dataconverter.</span></span><span class="sig-name descname"><span class="pre">ParquetDataConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extractors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gcd_rescue</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_files_to_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequential_batch_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_file_batch_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icetray_verbose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i3_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/data/parquet/parquet_dataconverter.html#ParquetDataConverter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.data.parquet.parquet_dataconverter.ParquetDataConverter" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="graphnet.data.dataconverter.html#graphnet.data.dataconverter.DataConverter" title="graphnet.data.dataconverter.DataConverter"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataConverter</span></code></a></p>
 <p>Class for converting I3-files to Parquet format.</p>
 <p>Construct DataConverter.</p>
@@ -569,6 +577,7 @@ files whose names contain:</p>
 <li><p><strong>workers</strong> (<em>int</em>) – </p></li>
 <li><p><strong>index_column</strong> (<em>str</em>) – </p></li>
 <li><p><strong>icetray_verbose</strong> (<em>int</em>) – </p></li>
+<li><p><strong>i3_filters</strong> (<em>List</em><em>[</em><a class="reference internal" href="graphnet.data.filters.html#graphnet.data.filters.I3Filter" title="graphnet.data.filters.I3Filter"><em>I3Filter</em></a><em>]</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -641,12 +650,12 @@ files output by the current instance are merged.</p></li>
             </a>
           
           
-            <a href="graphnet.data.parquet.parquet_dataset.html" title="parquet_dataset"
+            <a href="graphnet.data.sqlite.html" title="sqlite"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> parquet_dataset </span>
+                class="md-footer-nav__direction"> "Next" </span> sqlite </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

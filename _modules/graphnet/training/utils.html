@@ -110,6 +110,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
@@ -328,10 +336,11 @@
 <span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Batch</span><span class="p">,</span> <span class="n">Data</span>
 
 <span class="kn">from</span> <span class="nn">graphnet.data.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">graphnet.data.sqlite</span> <span class="kn">import</span> <span class="n">SQLiteDataset</span>
-<span class="kn">from</span> <span class="nn">graphnet.data.parquet</span> <span class="kn">import</span> <span class="n">ParquetDataset</span>
+<span class="kn">from</span> <span class="nn">graphnet.data.dataset</span> <span class="kn">import</span> <span class="n">SQLiteDataset</span>
+<span class="kn">from</span> <span class="nn">graphnet.data.dataset</span> <span class="kn">import</span> <span class="n">ParquetDataset</span>
 <span class="kn">from</span> <span class="nn">graphnet.models</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">graphnet.utilities.logging</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">graphnet.models.graphs</span> <span class="kn">import</span> <span class="n">GraphDefinition</span>
 
 
 <div class="viewcode-block" id="collate_fn">
@@ -339,10 +348,51 @@
 <span class="k">def</span> <span class="nf">collate_fn</span><span class="p">(</span><span class="n">graphs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Data</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Batch</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Remove graphs with less than two DOM hits.</span>
 
-<span class="sd">    Should not occur in "production.</span>
+<span class="sd">    Should not occur in "production".</span>
 <span class="sd">    """</span>
     <span class="n">graphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">graphs</span> <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">n_pulses</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Batch</span><span class="o">.</span><span class="n">from_data_list</span><span class="p">(</span><span class="n">graphs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="collator_sequence_buckleting">
+<a class="viewcode-back" href="../../../api/graphnet.training.utils.html#graphnet.training.utils.collator_sequence_buckleting">[docs]</a>
+<span class="k">class</span> <span class="nc">collator_sequence_buckleting</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Perform the sequence bucketing for the graphs in the batch."""</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">"""Set cutting points of the different mini-batches.</span>
+
+<span class="sd">        batch_splits: list of floats, each element is the fraction of the total</span>
+<span class="sd">        number of graphs. This list should not explicitly define the first and</span>
+<span class="sd">        last elements, which will always be 0 and 1 respectively.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_splits</span> <span class="o">=</span> <span class="n">batch_splits</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Data</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Batch</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Execute sequence bucketing on the input list of graphs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            graphs: A list of Data objects representing the input graphs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Batch objects, each containing a mini-batch of the input</span>
+<span class="sd">            graphs sorted by their number of pulses.</span>
+<span class="sd">        """</span>
+        <span class="n">graphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">graphs</span> <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">n_pulses</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">graphs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">n_pulses</span><span class="p">)</span>
+        <span class="n">batch_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">minp</span><span class="p">,</span> <span class="n">maxp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_splits</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_splits</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">min_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minp</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">))</span>
+            <span class="n">max_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxp</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">))</span>
+            <span class="n">this_graphs</span> <span class="o">=</span> <span class="n">graphs</span><span class="p">[</span><span class="n">min_idx</span><span class="p">:</span><span class="n">max_idx</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_graphs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">this_batch</span> <span class="o">=</span> <span class="n">Batch</span><span class="o">.</span><span class="n">from_data_list</span><span class="p">(</span><span class="n">this_graphs</span><span class="p">)</span>
+                <span class="n">batch_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_batch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">batch_list</span></div>
 
 
 
@@ -352,6 +402,7 @@
 <span class="k">def</span> <span class="nf">make_dataloader</span><span class="p">(</span>
     <span class="n">db</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">pulsemaps</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">graph_definition</span><span class="p">:</span> <span class="n">GraphDefinition</span><span class="p">,</span>
     <span class="n">features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">truth</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
@@ -387,6 +438,7 @@
         <span class="n">loss_weight_table</span><span class="o">=</span><span class="n">loss_weight_table</span><span class="p">,</span>
         <span class="n">loss_weight_column</span><span class="o">=</span><span class="n">loss_weight_column</span><span class="p">,</span>
         <span class="n">index_column</span><span class="o">=</span><span class="n">index_column</span><span class="p">,</span>
+        <span class="n">graph_definition</span><span class="o">=</span><span class="n">graph_definition</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># adds custom labels to dataset</span>
@@ -413,6 +465,7 @@
 <a class="viewcode-back" href="../../../api/graphnet.training.utils.html#graphnet.training.utils.make_train_validation_dataloader">[docs]</a>
 <span class="k">def</span> <span class="nf">make_train_validation_dataloader</span><span class="p">(</span>
     <span class="n">db</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">graph_definition</span><span class="p">:</span> <span class="n">GraphDefinition</span><span class="p">,</span>
     <span class="n">selection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
     <span class="n">pulsemaps</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -435,8 +488,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Construct train and test `DataLoader` instances."""</span>
     <span class="c1"># Reproducibility</span>
-    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
     <span class="c1"># Checks(s)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pulsemaps</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">pulsemaps</span> <span class="o">=</span> <span class="p">[</span><span class="n">pulsemaps</span><span class="p">]</span>
@@ -446,19 +498,21 @@
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span>
         <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".db"</span><span class="p">):</span>
             <span class="n">dataset</span> <span class="o">=</span> <span class="n">SQLiteDataset</span><span class="p">(</span>
-                <span class="n">db</span><span class="p">,</span>
-                <span class="n">pulsemaps</span><span class="p">,</span>
-                <span class="n">features</span><span class="p">,</span>
-                <span class="n">truth</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="n">db</span><span class="p">,</span>
+                <span class="n">graph_definition</span><span class="o">=</span><span class="n">graph_definition</span><span class="p">,</span>
+                <span class="n">pulsemaps</span><span class="o">=</span><span class="n">pulsemaps</span><span class="p">,</span>
+                <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+                <span class="n">truth</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span>
                 <span class="n">truth_table</span><span class="o">=</span><span class="n">truth_table</span><span class="p">,</span>
                 <span class="n">index_column</span><span class="o">=</span><span class="n">index_column</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">db</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".parquet"</span><span class="p">):</span>
             <span class="n">dataset</span> <span class="o">=</span> <span class="n">ParquetDataset</span><span class="p">(</span>
-                <span class="n">db</span><span class="p">,</span>
-                <span class="n">pulsemaps</span><span class="p">,</span>
-                <span class="n">features</span><span class="p">,</span>
-                <span class="n">truth</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="n">db</span><span class="p">,</span>
+                <span class="n">graph_definition</span><span class="o">=</span><span class="n">graph_definition</span><span class="p">,</span>
+                <span class="n">pulsemaps</span><span class="o">=</span><span class="n">pulsemaps</span><span class="p">,</span>
+                <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+                <span class="n">truth</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span>
                 <span class="n">truth_table</span><span class="o">=</span><span class="n">truth_table</span><span class="p">,</span>
                 <span class="n">index_column</span><span class="o">=</span><span class="n">index_column</span><span class="p">,</span>
             <span class="p">)</span>
@@ -477,13 +531,13 @@
             <span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rng</span>
         <span class="p">)</span>
         <span class="n">training_df</span><span class="p">,</span> <span class="n">validation_df</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-            <span class="n">shuffled_df</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rng</span>
+            <span class="n">shuffled_df</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span>
         <span class="p">)</span>
         <span class="n">training_selection</span> <span class="o">=</span> <span class="n">training_df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">validation_selection</span> <span class="o">=</span> <span class="n">validation_df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">training_selection</span><span class="p">,</span> <span class="n">validation_selection</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-            <span class="n">selection</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rng</span>
+            <span class="n">selection</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span>
         <span class="p">)</span>
 
     <span class="c1"># Create DataLoaders</span>
@@ -503,6 +557,7 @@
         <span class="n">loss_weight_table</span><span class="o">=</span><span class="n">loss_weight_table</span><span class="p">,</span>
         <span class="n">index_column</span><span class="o">=</span><span class="n">index_column</span><span class="p">,</span>
         <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+        <span class="n">graph_definition</span><span class="o">=</span><span class="n">graph_definition</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">training_dataloader</span> <span class="o">=</span> <span class="n">make_dataloader</span><span class="p">(</span>

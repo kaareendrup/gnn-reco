@@ -111,6 +111,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
@@ -121,7 +129,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dataset" href="graphnet.data.dataset.html" />
+    <link rel="next" title="filters" href="graphnet.data.filters.html" />
     <link rel="prev" title="dataconverter" href="graphnet.data.dataconverter.html" />
   
    
@@ -301,6 +309,13 @@
     <li class="md-nav__item">
     
     
+      <a href="graphnet.data.dataset.html" class="md-nav__link">dataset</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="graphnet.data.extractors.html" class="md-nav__link">extractors</a>
       
     
@@ -402,7 +417,7 @@
     <li class="md-nav__item">
     
     
-      <a href="graphnet.data.dataset.html" class="md-nav__link">dataset</a>
+      <a href="graphnet.data.filters.html" class="md-nav__link">filters</a>
       
     
     </li>
@@ -528,7 +543,7 @@
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="graphnet.data.dataloader.DataLoader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.data.dataloader.</span></span><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent_workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collate_fn=&lt;function</span> <span class="pre">collate_fn&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/data/dataloader.html#DataLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.data.dataloader.DataLoader" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.data.dataloader.</span></span><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent_workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collate_fn=&lt;function</span> <span class="pre">collate_fn&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/data/dataloader.html#DataLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.data.dataloader.DataLoader" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
 <p>Class for loading data from a <cite>Dataset</cite>.</p>
 <p>Construct <cite>DataLoader</cite>.</p>
@@ -541,6 +556,7 @@
 <li><p><strong>num_workers</strong> (<em>int</em>) – </p></li>
 <li><p><strong>persistent_workers</strong> (<em>bool</em>) – </p></li>
 <li><p><strong>collate_fn</strong> (<em>Callable</em>) – </p></li>
+<li><p><strong>prefetch_factor</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
 </ul>
 </dd>
@@ -588,12 +604,12 @@
             </a>
           
           
-            <a href="graphnet.data.dataset.html" title="dataset"
+            <a href="graphnet.data.filters.html" title="filters"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> dataset </span>
+                class="md-footer-nav__direction"> "Next" </span> filters </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

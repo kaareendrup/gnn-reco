@@ -110,6 +110,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css?v=79c92029" />
@@ -316,19 +324,21 @@
   <h1 id="modules-graphnet-deployment-i3modules-graphnet-module--page-root">Source code for graphnet.deployment.i3modules.graphnet_module</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Class(es) for deploying GraphNeT models in icetray as I3Modules."""</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">dill</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Batch</span>
 
 <span class="kn">from</span> <span class="nn">graphnet.data.extractors</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">I3FeatureExtractor</span><span class="p">,</span>
     <span class="n">I3FeatureExtractorIceCubeUpgrade</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">graphnet.models</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">StandardModel</span>
+<span class="kn">from</span> <span class="nn">graphnet.models.graphs</span> <span class="kn">import</span> <span class="n">GraphDefinition</span>
 <span class="kn">from</span> <span class="nn">graphnet.utilities.imports</span> <span class="kn">import</span> <span class="n">has_icecube_package</span>
+<span class="kn">from</span> <span class="nn">graphnet.utilities.config</span> <span class="kn">import</span> <span class="n">ModelConfig</span>
 
 <span class="k">if</span> <span class="n">has_icecube_package</span><span class="p">()</span> <span class="ow">or</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">icecube.icetray</span> <span class="kn">import</span> <span class="p">(</span>
@@ -353,6 +363,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">graph_definition</span><span class="p">:</span> <span class="n">GraphDefinition</span><span class="p">,</span>
         <span class="n">pulsemap</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">pulsemap_extractor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
@@ -363,6 +374,7 @@
 <span class="w">        </span><span class="sd">"""I3Module Constructor.</span>
 
 <span class="sd">        Arguments:</span>
+<span class="sd">            graph_definition: An instance of GraphDefinition.  E.g. KNNGraph.</span>
 <span class="sd">            pulsemap: the pulse map on which the module functions</span>
 <span class="sd">            features: the features that is used from the pulse map.</span>
 <span class="sd">                      E.g. [dom_x, dom_y, dom_z, charge]</span>
@@ -370,6 +382,8 @@
 <span class="sd">                                pulsemap from the I3Frames</span>
 <span class="sd">            gcd_file: Path to the associated gcd-file.</span>
 <span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">graph_definition</span><span class="p">,</span> <span class="n">GraphDefinition</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph_definition</span> <span class="o">=</span> <span class="n">graph_definition</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pulsemap</span> <span class="o">=</span> <span class="n">pulsemap</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="n">features</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gcd_file</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s2">"gcd_file must be string"</span>
@@ -396,22 +410,16 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>  <span class="c1"># py-l-i-n-t-:- -d-i-s-able=invalid-name</span>
 <span class="w">        </span><span class="sd">"""Process Physics I3Frame into graph."""</span>
         <span class="c1"># Extract features</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_feature_array_from_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-
+        <span class="n">input_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_feature_array_from_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
         <span class="c1"># Prepare graph data</span>
-        <span class="n">n_pulses</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-            <span class="n">batch</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span>
-            <span class="p">),</span>  <span class="c1"># @TODO: Necessary?</span>
-            <span class="n">features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># @TODO: This sort of hard-coding is not ideal; all features should be</span>
-        <span class="c1">#        captured by `FEATURES` and included in the output of</span>
-        <span class="c1">#        `I3FeatureExtractor`.</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">n_pulses</span> <span class="o">=</span> <span class="n">n_pulses</span>
-        <span class="k">return</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_features</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph_definition</span><span class="p">(</span>
+                <span class="n">input_features</span><span class="o">=</span><span class="n">input_features</span><span class="p">,</span>
+                <span class="n">input_feature_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">Batch</span><span class="o">.</span><span class="n">from_data_list</span><span class="p">([</span><span class="n">data</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_extract_feature_array_from_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">I3Frame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Apply the I3FeatureExtractors to the I3Frame.</span>
@@ -468,10 +476,11 @@
         <span class="n">pulsemap_extractor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="n">List</span><span class="p">[</span><span class="n">I3FeatureExtractor</span><span class="p">],</span> <span class="n">I3FeatureExtractor</span>
         <span class="p">],</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Model</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">model_config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ModelConfig</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">state_dict</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">prediction_columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">gcd_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">prediction_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""General class for inference on I3Frames (physics).</span>
 
@@ -479,36 +488,37 @@
 <span class="sd">            pulsemap: the pulsmap that the model is expecting as input.</span>
 <span class="sd">            features: the features of the pulsemap that the model is expecting.</span>
 <span class="sd">            pulsemap_extractor: The extractor used to extract the pulsemap.</span>
-<span class="sd">            model: The model (or path to pickled model) that will be</span>
-<span class="sd">                    used for inference.</span>
+<span class="sd">            model_config: The ModelConfig (or path to it) that summarizes the</span>
+<span class="sd">                            model used for inference.</span>
+<span class="sd">            state_dict: Path to state_dict containing the learned weights.</span>
 <span class="sd">            model_name: The name used for the model. Will help define the</span>
 <span class="sd">                        named entry in the I3Frame. E.g. "dynedge".</span>
+<span class="sd">            gcd_file: path to associated gcd file.</span>
 <span class="sd">            prediction_columns: column names for the predictions of the model.</span>
 <span class="sd">                               Will help define the named entry in the I3Frame.</span>
-<span class="sd">                                E.g. ['energy_reco'].</span>
-<span class="sd">            gcd_file: path to associated gcd file.</span>
+<span class="sd">                                E.g. ['energy_reco']. Optional.</span>
 <span class="sd">        """</span>
+        <span class="c1"># Construct model &amp; load weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">trust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">pulsemap</span><span class="o">=</span><span class="n">pulsemap</span><span class="p">,</span>
             <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
             <span class="n">pulsemap_extractor</span><span class="o">=</span><span class="n">pulsemap_extractor</span><span class="p">,</span>
             <span class="n">gcd_file</span><span class="o">=</span><span class="n">gcd_file</span><span class="p">,</span>
+            <span class="n">graph_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_graph_definition</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-                <span class="n">model</span><span class="p">,</span> <span class="n">pickle_module</span><span class="o">=</span><span class="n">dill</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s2">"cpu"</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">inference</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prediction_columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">prediction_columns</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">prediction_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prediction_columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">prediction_columns</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span> <span class="o">=</span> <span class="n">prediction_columns</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span> <span class="o">=</span> <span class="n">prediction_columns</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">prediction_labels</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
 
@@ -516,13 +526,12 @@
 <span class="w">        </span><span class="sd">"""Write predictions from model to frame."""</span>
         <span class="c1"># inference</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_graph</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span><span class="p">)</span>
             <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prediction_columns</span><span class="p">))</span>
-
         <span class="c1"># Check dimensions of predictions and prediction columns</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">dim</span> <span class="o">=</span> <span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -537,7 +546,6 @@
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">assert</span> <span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">dim</span><span class="p">)):</span>
-            <span class="c1"># print(predictions)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
                 <span class="n">data</span><span class="p">[</span>
@@ -578,13 +586,14 @@
         <span class="n">pulsemap_extractor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="n">List</span><span class="p">[</span><span class="n">I3FeatureExtractor</span><span class="p">],</span> <span class="n">I3FeatureExtractor</span>
         <span class="p">],</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Model</span><span class="p">,</span> <span class="n">StandardModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">model_config</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">state_dict</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">prediction_columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">gcd_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
         <span class="n">discard_empty_events</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">prediction_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""General class for inference on I3Frames (physics).</span>
 
@@ -593,13 +602,11 @@
 <span class="sd">                     (the one that is being cleaned).</span>
 <span class="sd">            features: the features of the pulsemap that the model is expecting.</span>
 <span class="sd">            pulsemap_extractor: The extractor used to extract the pulsemap.</span>
-<span class="sd">            model: The model (or path to pickled model) that will be</span>
-<span class="sd">                    used for inference.</span>
+<span class="sd">            model_config: The ModelConfig (or path to it) that summarizes the</span>
+<span class="sd">                            model used for inference.</span>
+<span class="sd">            state_dict: Path to state_dict containing the learned weights.</span>
 <span class="sd">            model_name: The name used for the model. Will help define the named</span>
 <span class="sd">                        entry in the I3Frame. E.g. "dynedge".</span>
-<span class="sd">            prediction_columns: column names for the predictions of the model.</span>
-<span class="sd">                            Will help define the named entry in the I3Frame.</span>
-<span class="sd">                            E.g. ['energy_reco'].</span>
 <span class="sd">            gcd_file: path to associated gcd file.</span>
 <span class="sd">            threshold: the threshold for being considered a positive case.</span>
 <span class="sd">                        E.g., predictions &gt;= threshold will be considered</span>
@@ -609,12 +616,16 @@
 <span class="sd">                            to speed up processing especially for noise</span>
 <span class="sd">                            simulation, since it will not do any writing or</span>
 <span class="sd">                            further calculations.</span>
+<span class="sd">            prediction_columns: column names for the predictions of the model.</span>
+<span class="sd">                            Will help define the named entry in the I3Frame.</span>
+<span class="sd">                            E.g. ['energy_reco']. Optional.</span>
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">pulsemap</span><span class="o">=</span><span class="n">pulsemap</span><span class="p">,</span>
             <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
             <span class="n">pulsemap_extractor</span><span class="o">=</span><span class="n">pulsemap_extractor</span><span class="p">,</span>
-            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">model_config</span><span class="o">=</span><span class="n">model_config</span><span class="p">,</span>
+            <span class="n">state_dict</span><span class="o">=</span><span class="n">state_dict</span><span class="p">,</span>
             <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
             <span class="n">prediction_columns</span><span class="o">=</span><span class="n">prediction_columns</span><span class="p">,</span>
             <span class="n">gcd_file</span><span class="o">=</span><span class="n">gcd_file</span><span class="p">,</span>
@@ -629,8 +640,9 @@
         <span class="c1"># inference</span>
         <span class="n">gcd_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gcd_file</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_graph</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If there is no pulses to clean</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discard_empty_events</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">predictions</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>

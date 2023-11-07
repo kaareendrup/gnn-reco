@@ -111,6 +111,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
@@ -121,8 +129,8 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="task" href="graphnet.models.task.html" />
-    <link rel="prev" title="dynedge_jinst" href="graphnet.models.gnn.dynedge_jinst.html" />
+    <link rel="next" title="graphs" href="graphnet.models.graphs.html" />
+    <link rel="prev" title="dynedge_kaggle_tito" href="graphnet.models.gnn.dynedge_kaggle_tito.html" />
   
    
 
@@ -356,6 +364,13 @@
     <li class="md-nav__item">
     
     
+      <a href="graphnet.models.gnn.dynedge_kaggle_tito.html" class="md-nav__link">dynedge_kaggle_tito</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     <label class="md-nav__link md-nav__link--active" for="__toc"> gnn </label>
     
@@ -417,6 +432,13 @@
     <li class="md-nav__item">
     
     
+      <a href="graphnet.models.graphs.html" class="md-nav__link">graphs</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="graphnet.models.task.html" class="md-nav__link">task</a>
       
     
@@ -425,13 +447,6 @@
     
     
       <a href="graphnet.models.coarsening.html" class="md-nav__link">coarsening</a>
-      
-    
-    </li>
-    <li class="md-nav__item">
-    
-    
-      <a href="graphnet.models.graph_builders.html" class="md-nav__link">graph_builders</a>
       
     
     </li>
@@ -530,16 +545,19 @@
 <p>Base GNN-specific <cite>Model</cite> class(es).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="graphnet.models.gnn.gnn.GNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.models.gnn.gnn.</span></span><span class="sig-name descname"><span class="pre">GNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_outputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/gnn/gnn.html#GNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.gnn.gnn.GNN" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.models.gnn.gnn.</span></span><span class="sig-name descname"><span class="pre">GNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/gnn/gnn.html#GNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.gnn.gnn.GNN" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="graphnet.models.model.html#graphnet.models.model.Model" title="graphnet.models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
 <p>Base class for all core GNN models in graphnet.</p>
 <p>Construct <cite>GNN</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nb_inputs</strong> (<em>int</em>) – </p></li>
-<li><p><strong>nb_outputs</strong> (<em>int</em>) – </p></li>
+<li><p><strong>args</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>object</p>
 </dd>
 </dl>
 <dl class="py property">
@@ -578,7 +596,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="graphnet.models.gnn.dynedge_jinst.html" title="dynedge_jinst"
+            <a href="graphnet.models.gnn.dynedge_kaggle_tito.html" title="dynedge_kaggle_tito"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -587,17 +605,17 @@
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> "Previous" </span> dynedge_jinst </span>
+                      class="md-footer-nav__direction"> "Previous" </span> dynedge_kaggle_tito </span>
               </div>
             </a>
           
           
-            <a href="graphnet.models.task.html" title="task"
+            <a href="graphnet.models.graphs.html" title="graphs"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> task </span>
+                class="md-footer-nav__direction"> "Next" </span> graphs </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

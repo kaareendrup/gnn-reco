@@ -14,6 +14,7 @@ data
 .. toctree::
    :maxdepth: 2
 
+   graphnet.data.dataset
    graphnet.data.extractors
    graphnet.data.parquet
    graphnet.data.sqlite
@@ -28,7 +29,7 @@ data
    graphnet.data.constants
    graphnet.data.dataconverter
    graphnet.data.dataloader
-   graphnet.data.dataset
+   graphnet.data.filters
    graphnet.data.pipeline
 
 

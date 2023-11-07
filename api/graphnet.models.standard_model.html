@@ -111,6 +111,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
@@ -336,6 +344,13 @@
     <li class="md-nav__item">
     
     
+      <a href="graphnet.models.graphs.html" class="md-nav__link">graphs</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="graphnet.models.task.html" class="md-nav__link">task</a>
       
     
@@ -344,13 +359,6 @@
     
     
       <a href="graphnet.models.coarsening.html" class="md-nav__link">coarsening</a>
-      
-    
-    </li>
-    <li class="md-nav__item">
-    
-    
-      <a href="graphnet.models.graph_builders.html" class="md-nav__link">graph_builders</a>
       
     
     </li>
@@ -377,6 +385,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StandardModel</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel.fit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">fit()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel.target_labels" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">target_labels</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel.prediction_labels" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">prediction_labels</span></code></a>
@@ -413,6 +423,13 @@
     
       <a href="#graphnet.models.standard_model.StandardModel" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StandardModel</span></code></a>
       <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#graphnet.models.standard_model.StandardModel.fit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">fit()</span></code></a>
+      
+    
+    </li>
     <li class="md-nav__item">
     
     
@@ -558,6 +575,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StandardModel</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel.fit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">fit()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel.target_labels" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">target_labels</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#graphnet.models.standard_model.StandardModel.prediction_labels" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">prediction_labels</span></code></a>
@@ -600,27 +619,48 @@
 <p>Standard model class(es).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="graphnet.models.standard_model.StandardModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.models.standard_model.</span></span><span class="sig-name descname"><span class="pre">StandardModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gnn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarsening</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_class=&lt;class</span> <span class="pre">'torch.optim.adam.Adam'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/standard_model.html#StandardModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.standard_model.StandardModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphnet.models.standard_model.</span></span><span class="sig-name descname"><span class="pre">StandardModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/standard_model.html#StandardModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.standard_model.StandardModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="graphnet.models.model.html#graphnet.models.model.Model" title="graphnet.models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
 <p>Main class for standard models in graphnet.</p>
-<p>This class chains together the different elements of a complete GNN-based
+<p>This class chains together the different elements of a complete GNN- based
 model (detector read-in, GNN architecture, and task-specific read-outs).</p>
 <p>Construct <cite>StandardModel</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<a class="reference internal" href="graphnet.models.detector.detector.html#graphnet.models.detector.detector.Detector" title="graphnet.models.detector.detector.Detector"><em>Detector</em></a>) – </p></li>
-<li><p><strong>gnn</strong> (<a class="reference internal" href="graphnet.models.gnn.gnn.html#graphnet.models.gnn.gnn.GNN" title="graphnet.models.gnn.gnn.GNN"><em>GNN</em></a>) – </p></li>
-<li><p><strong>tasks</strong> (<a class="reference internal" href="graphnet.models.task.task.html#graphnet.models.task.task.Task" title="graphnet.models.task.task.Task"><em>Task</em></a><em> | </em><em>List</em><em>[</em><a class="reference internal" href="graphnet.models.task.task.html#graphnet.models.task.task.Task" title="graphnet.models.task.task.Task"><em>Task</em></a><em>]</em>) – </p></li>
-<li><p><strong>coarsening</strong> (<a class="reference internal" href="graphnet.models.coarsening.html#graphnet.models.coarsening.Coarsening" title="graphnet.models.coarsening.Coarsening"><em>Coarsening</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>optimizer_class</strong> (<em>type</em>) – </p></li>
-<li><p><strong>optimizer_kwargs</strong> (<em>Dict</em><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>scheduler_class</strong> (<em>type</em><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>scheduler_kwargs</strong> (<em>Dict</em><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>scheduler_config</strong> (<em>Dict</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>args</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>object</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="graphnet.models.standard_model.StandardModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataloader</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_every_n_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient_clip_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution_strategy</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">trainer_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/standard_model.html#StandardModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.standard_model.StandardModel.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit <cite>StandardModel</cite> using <cite>pytorch_lightning.Trainer</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>train_dataloader</strong> (<em>DataLoader</em>) – </p></li>
+<li><p><strong>val_dataloader</strong> (<em>DataLoader</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em>) – </p></li>
+<li><p><strong>gpus</strong> (<em>List</em><em>[</em><em>int</em><em>] </em><em>| </em><em>int</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>callbacks</strong> (<em>List</em><em>[</em><em>Callback</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>ckpt_path</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>logger</strong> (<em>Logger</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>log_every_n_steps</strong> (<em>int</em>) – </p></li>
+<li><p><strong>gradient_clip_val</strong> (<em>float</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>distribution_strategy</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>trainer_kwargs</strong> (<em>Any</em>) – </p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="graphnet.models.standard_model.StandardModel.target_labels">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_labels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#graphnet.models.standard_model.StandardModel.target_labels" title="Link to this definition">¶</a></dt>
@@ -650,7 +690,7 @@ model (detector read-in, GNN architecture, and task-specific read-outs).</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code>]]</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Data</em>) – </p>
+<dd class="field-even"><p><strong>data</strong> (<em>Data</em><em> | </em><em>List</em><em>[</em><em>Data</em><em>]</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -666,7 +706,7 @@ between the training and validation step.</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>batch</strong> (<em>Data</em>) – </p></li>
+<li><p><strong>batch</strong> (<em>List</em><em>[</em><em>Data</em><em>]</em>) – </p></li>
 <li><p><strong>batch_idx</strong> (<em>int</em>) – </p></li>
 </ul>
 </dd>
@@ -682,7 +722,7 @@ between the training and validation step.</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>train_batch</strong> (<em>Data</em>) – </p></li>
+<li><p><strong>train_batch</strong> (<em>Data</em><em> | </em><em>List</em><em>[</em><em>Data</em><em>]</em>) – </p></li>
 <li><p><strong>batch_idx</strong> (<em>int</em>) – </p></li>
 </ul>
 </dd>
@@ -698,7 +738,7 @@ between the training and validation step.</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>val_batch</strong> (<em>Data</em>) – </p></li>
+<li><p><strong>val_batch</strong> (<em>Data</em><em> | </em><em>List</em><em>[</em><em>Data</em><em>]</em>) – </p></li>
 <li><p><strong>batch_idx</strong> (<em>int</em>) – </p></li>
 </ul>
 </dd>
@@ -715,7 +755,7 @@ between the training and validation step.</p>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>preds</strong> (<em>Tensor</em>) – </p></li>
-<li><p><strong>data</strong> (<em>Data</em>) – </p></li>
+<li><p><strong>data</strong> (<em>List</em><em>[</em><em>Data</em><em>]</em>) – </p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – </p></li>
 </ul>
 </dd>
@@ -763,7 +803,7 @@ between the training and validation step.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="graphnet.models.standard_model.StandardModel.predict_as_dataframe">
-<span class="sig-name descname"><span class="pre">predict_as_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction_columns</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution_strategy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/standard_model.html#StandardModel.predict_as_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.standard_model.StandardModel.predict_as_dataframe" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict_as_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction_columns</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution_strategy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/graphnet/models/standard_model.html#StandardModel.predict_as_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphnet.models.standard_model.StandardModel.predict_as_dataframe" title="Link to this definition">¶</a></dt>
 <dd><p>Return predictions for <cite>dataloader</cite> as a DataFrame.</p>
 <p>Include <cite>additional_attributes</cite> as additional columns in the output
 DataFrame.</p>
@@ -775,9 +815,7 @@ DataFrame.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>dataloader</strong> (<em>DataLoader</em>) – </p></li>
 <li><p><strong>prediction_columns</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
-<li><p><strong>node_level</strong> (<em>bool</em>) – </p></li>
 <li><p><strong>additional_attributes</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
-<li><p><strong>index_column</strong> (<em>str</em>) – </p></li>
 <li><p><strong>gpus</strong> (<em>List</em><em>[</em><em>int</em><em>] </em><em>| </em><em>int</em><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>distribution_strategy</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
 </ul>

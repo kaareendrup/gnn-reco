@@ -110,6 +110,14 @@
     background: rgba(0,0,0,0.03);
   }
 
+  #eu-emblem {
+    margin: 0;
+  }
+
+  #eu-emblem figcaption {
+    display: none;
+  }
+
 </style>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css?v=79c92029" />
@@ -343,6 +351,8 @@
 
     <span class="c1"># Requires one feature, logit for being signal class.</span>
     <span class="n">nb_inputs</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">default_target_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"target"</span><span class="p">]</span>
+    <span class="n">default_prediction_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"target_pred"</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="c1"># transform probability of being muon</span>
@@ -357,6 +367,8 @@
 
     <span class="c1"># Requires one feature, logit for being signal class.</span>
     <span class="n">nb_inputs</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">default_target_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"target"</span><span class="p">]</span>
+    <span class="n">default_prediction_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"target_pred"</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">x</span></div>
